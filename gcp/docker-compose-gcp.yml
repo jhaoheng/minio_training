@@ -1,0 +1,26 @@
+version: "3.2"
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - 9000:9000/tcp
+    volumes:
+      - ./data:/data
+      - ./credentials.json:/credentials.json
+    environment: 
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=miniominio
+      - MINIO_REGION=us-east-1
+      - MINIO_BROWSER=on # on / off
+      - MINIO_UPDATE=off # on / off
+
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials.json
+      - GOOGLE_PROJECT_ID=gotomythings-198908
+    # command: server /data
+    command: gateway gcs ${GOOGLE_PROJECT_ID}
+  minio_client:
+    image: minio/mc:latest
+    container_name: mc
+    tty: true
+    entrypoint: /bin/sh
